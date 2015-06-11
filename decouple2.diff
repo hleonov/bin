@@ -1,0 +1,266 @@
+diff -C 5 /home/fbuelen/gromacs-4.5.4/src/kernel/readir.c ./readir.c
+*** /home/fbuelen/gromacs-4.5.4/src/kernel/readir.c	2011-03-15 13:44:34.000000000 +0100
+--- ./readir.c	2012-09-03 17:40:05.373263471 +0200
+***************
+*** 73,83 ****
+   */
+  
+  static char tcgrps[STRLEN],tau_t[STRLEN],ref_t[STRLEN],
+    acc[STRLEN],accgrps[STRLEN],freeze[STRLEN],frdim[STRLEN],
+    energy[STRLEN],user1[STRLEN],user2[STRLEN],vcm[STRLEN],xtc_grps[STRLEN],
+!   couple_moltype[STRLEN],orirefitgrp[STRLEN],egptable[STRLEN],egpexcl[STRLEN],
+    wall_atomtype[STRLEN],wall_density[STRLEN],deform[STRLEN],QMMM[STRLEN];
+  static char foreign_lambda[STRLEN];
+  static char **pull_grp;
+  static char anneal[STRLEN],anneal_npoints[STRLEN],
+    anneal_time[STRLEN],anneal_temp[STRLEN];
+--- 73,83 ----
+   */
+  
+  static char tcgrps[STRLEN],tau_t[STRLEN],ref_t[STRLEN],
+    acc[STRLEN],accgrps[STRLEN],freeze[STRLEN],frdim[STRLEN],
+    energy[STRLEN],user1[STRLEN],user2[STRLEN],vcm[STRLEN],xtc_grps[STRLEN],
+!   couple_moltype[STRLEN],couple2_moltype[STRLEN],orirefitgrp[STRLEN],egptable[STRLEN],egpexcl[STRLEN],
+    wall_atomtype[STRLEN],wall_density[STRLEN],deform[STRLEN],QMMM[STRLEN];
+  static char foreign_lambda[STRLEN];
+  static char **pull_grp;
+  static char anneal[STRLEN],anneal_npoints[STRLEN],
+    anneal_time[STRLEN],anneal_temp[STRLEN];
+***************
+*** 1122,1131 ****
+--- 1122,1134 ----
+    ITYPE ("dh_hist_size", ir->dh_hist_size, 0);
+    RTYPE ("dh_hist_spacing", ir->dh_hist_spacing, 0.1);
+    STYPE ("couple-moltype",  couple_moltype,  NULL);
+    EETYPE("couple-lambda0", opts->couple_lam0, couple_lam);
+    EETYPE("couple-lambda1", opts->couple_lam1, couple_lam);
++   STYPE ("couple2-moltype",  couple2_moltype,  NULL);
++   EETYPE("couple2-lambda0", opts->couple2_lam0, couple_lam);
++   EETYPE("couple2-lambda1", opts->couple2_lam1, couple_lam);  
+    EETYPE("couple-intramol", opts->bCoupleIntra, yesno_names);
+  
+    /* Non-equilibrium MD stuff */  
+    CCTYPE("Non-equilibrium MD stuff");
+    STYPE ("acc-grps",    accgrps,        NULL);
+***************
+*** 1240,1249 ****
+--- 1243,1273 ----
+      } else {
+        warning(wi,"Can not couple a molecule with free_energy = no");
+      }
+    }
+  
++   opts->couple2_moltype = NULL;
++   if (strlen(couple2_moltype) > 0) {
++     if (!(strlen(couple_moltype) > 0)) {
++       gmx_fatal(FARGS,"hacked-in second moleculetype for decoupling ('couple2_moltype') doesn't work without a first 'couple_moltype' specified");
++     }
++     if (ir->efep != efepNO) {
++       opts->couple2_moltype = strdup(couple2_moltype);
++       if (opts->couple2_lam0 == opts->couple2_lam1)
++     warning(wi,"The lambda=0 and lambda=1 states for coupling (couple2_moltype) are identical");
++       if (ir->eI == eiMD && (opts->couple2_lam0 == ecouplamNONE ||
++                  opts->couple2_lam1 == ecouplamNONE)) {
++     warning(wi,"For proper sampling of the (nearly) decoupled state, stochastic dynamics should be used");
++       }
++     } else {
++       warning(wi,"Can not couple a molecule with free_energy = no");
++     }
++   }
++ 
++ 
++ 
++ 
+    do_wall_params(ir,wall_atomtype,wall_density,opts);
+    
+    if (opts->bOrire && str_nelem(orirefitgrp,MAXPTR,NULL)!=1) {
+        warning_error(wi,"ERROR: Need one orientation restraint fit group\n");
+    }
+diff -C 5 /home/fbuelen/gromacs-4.5.4/src/kernel/readir.h ./readir.h
+*** /home/fbuelen/gromacs-4.5.4/src/kernel/readir.h	2011-03-15 13:44:34.000000000 +0100
+--- ./readir.h	2012-08-31 13:47:35.540407517 +0200
+***************
+*** 69,78 ****
+--- 69,81 ----
+    char *wall_atomtype[2];
+    gmx_bool pull_start;
+    char *couple_moltype;
+    int  couple_lam0;
+    int  couple_lam1;
++   char *couple2_moltype;
++   int  couple2_lam0;
++   int  couple2_lam1;
+    gmx_bool bCoupleIntra;
+  } t_gromppopts;
+  
+  
+  extern void init_ir(t_inputrec *ir, t_gromppopts *opts);
+diff -C 5 /home/fbuelen/gromacs-4.5.4/src/kernel/topio.c ./topio.c
+*** /home/fbuelen/gromacs-4.5.4/src/kernel/topio.c	2011-03-15 13:44:34.000000000 +0100
+--- ./topio.c	2012-08-31 14:02:52.477206626 +0200
+***************
+*** 523,533 ****
+    real       fudgeLJ=-1;    /* Multiplication factor to generate 1-4 from LJ */
+    gmx_bool       bReadDefaults,bReadMolType,bGenPairs,bWarn_copy_A_B;
+    double     qt=0,qBt=0; /* total charge */
+    t_bond_atomtype batype;
+    int        lastcg=-1;
+!   int        dcatt=-1,nmol_couple;
+    /* File handling variables */
+    int        status,done;
+    gmx_cpp_t  handle;
+    char     *tmp_line=NULL;
+    char       warn_buf[STRLEN];
+--- 523,533 ----
+    real       fudgeLJ=-1;    /* Multiplication factor to generate 1-4 from LJ */
+    gmx_bool       bReadDefaults,bReadMolType,bGenPairs,bWarn_copy_A_B;
+    double     qt=0,qBt=0; /* total charge */
+    t_bond_atomtype batype;
+    int        lastcg=-1;
+!   int        dcatt=-1,nmol_couple,nmol_couple2;
+    /* File handling variables */
+    int        status,done;
+    gmx_cpp_t  handle;
+    char     *tmp_line=NULL;
+    char       warn_buf[STRLEN];
+***************
+*** 568,577 ****
+--- 568,578 ----
+    /* parse the actual file */
+    bReadDefaults = FALSE;
+    bGenPairs     = FALSE;
+    bReadMolType  = FALSE;
+    nmol_couple = 0;
++   nmol_couple2 = 0;
+    
+    do {
+      status = cpp_read_line(&handle,STRLEN,line);
+      done = (status == eCPP_EOF);
+      if (!done) {
+***************
+*** 749,763 ****
+  		break;
+  			  
+  	  case d_moleculetype: {
+  	    if (!bReadMolType) {
+  	      int ntype;
+!           if (opts->couple_moltype != NULL &&
+                (opts->couple_lam0 == ecouplamNONE ||
+                 opts->couple_lam0 == ecouplamQ ||
+                 opts->couple_lam1 == ecouplamNONE ||
+!                opts->couple_lam1 == ecouplamQ))
+            {
+                dcatt = add_atomtype_decoupled(symtab,atype,
+                                               &nbparam,bGenPairs?&pair:NULL);
+            }
+  	      ntype = get_atomtype_ntypes(atype);
+--- 750,768 ----
+  		break;
+  			  
+  	  case d_moleculetype: {
+  	    if (!bReadMolType) {
+  	      int ntype;
+!           if ((opts->couple_moltype != NULL || opts->couple2_moltype != NULL)&&
+                (opts->couple_lam0 == ecouplamNONE ||
+                 opts->couple_lam0 == ecouplamQ ||
+                 opts->couple_lam1 == ecouplamNONE ||
+!                opts->couple_lam1 == ecouplamQ || 
+!                opts->couple2_lam0 == ecouplamNONE ||
+!                opts->couple2_lam0 == ecouplamQ ||
+!                opts->couple2_lam1 == ecouplamNONE ||
+!                opts->couple2_lam1 == ecouplamQ))
+            {
+                dcatt = add_atomtype_decoupled(symtab,atype,
+                                               &nbparam,bGenPairs?&pair:NULL);
+            }
+  	      ntype = get_atomtype_ntypes(atype);
+***************
+*** 831,841 ****
+  	    trim(pline);
+  	    title=put_symtab(symtab,pline);
+  	    break;
+  	  case d_molecules: {
+  	    int  whichmol;
+! 	    gmx_bool bCouple;
+  	    
+  	    push_mol(nmol,*molinfo,pline,&whichmol,&nrcopies,wi);
+  	    mi0=&((*molinfo)[whichmol]);
+  	    srenew(molb,nmolb+1);
+  	    molb[nmolb].type = whichmol;
+--- 836,846 ----
+  	    trim(pline);
+  	    title=put_symtab(symtab,pline);
+  	    break;
+  	  case d_molecules: {
+  	    int  whichmol;
+! 	    gmx_bool bCouple, bCouple2;
+  	    
+  	    push_mol(nmol,*molinfo,pline,&whichmol,&nrcopies,wi);
+  	    mi0=&((*molinfo)[whichmol]);
+  	    srenew(molb,nmolb+1);
+  	    molb[nmolb].type = whichmol;
+***************
+*** 847,856 ****
+--- 852,867 ----
+                      gmx_strcasecmp(*(mi0->name),opts->couple_moltype) == 0));
+          if (bCouple) {
+              nmol_couple += nrcopies;
+          }
+  
++         bCouple2 = (opts->couple2_moltype &&
++                strcmp(*(mi0->name),opts->couple2_moltype) == 0);
++         if (bCouple2) {
++           nmol_couple2 += nrcopies;
++         }
++ 
+  	    if (mi0->atoms.nr == 0) {
+  	      gmx_fatal(FARGS,"Molecule type '%s' contains no atoms",
+  			*mi0->name);
+  	    }
+  	    fprintf(stderr,
+***************
+*** 886,895 ****
+--- 897,915 ----
+                  convert_moltype_couple(mi0,dcatt,*fudgeQQ,
+                                         opts->couple_lam0,opts->couple_lam1,
+                                         opts->bCoupleIntra,
+                                         nb_funct,&(plist[nb_funct]));
+              }
++           if (bCouple2) {
++             if (bCouple) {
++               gmx_fatal(FARGS,"couple-moltypes 1 and 2 are identical");
++             }
++         convert_moltype_couple(mi0,dcatt,*fudgeQQ,
++                        opts->couple2_lam0,opts->couple2_lam1,
++                        opts->bCoupleIntra,
++                        nb_funct,&(plist[nb_funct]));
++           }
+              stupid_fill_block(&mi0->mols,mi0->atoms.nr,TRUE);
+              mi0->bProcessed=TRUE;
+  	    }
+  	    break;
+  	  }
+***************
+*** 915,924 ****
+--- 935,955 ----
+  		opts->couple_moltype);
+      }
+      fprintf(stderr,"Coupling %d copies of molecule type '%s'\n",
+              nmol_couple,opts->couple_moltype);
+    }
++ 
++   if (opts->couple2_moltype) {
++     if (nmol_couple2 == 0) {
++       gmx_fatal(FARGS,"Did not find any molecules of type '%s' for coupling (moltype2)",
++         opts->couple2_moltype);
++     } else {
++       fprintf(stderr,"Found %d copies of molecule type '%s' for coupling (moltype2)\n",
++           nmol_couple,opts->couple2_moltype);
++     }
++   }
++ 
+    
+    /* this is not very clean, but fixes core dump on empty system name */
+    if(!title)
+      title=put_symtab(symtab,"");
+    if (fabs(qt) > 1e-4) {

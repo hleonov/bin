@@ -1,0 +1,101 @@
+PMID- 7508997
+OWN - NLM
+STAT- MEDLINE
+DA  - 19940323
+DCOM- 19940323
+LR  - 20041118
+PUBM- Print
+IS  - 0022-538X
+VI  - 68
+IP  - 3
+DP  - 1994 Mar
+TI  - Influenza A virus M2 ion channel protein: a structure-function analysis.
+PG  - 1551-63
+AB  - A structure-function analysis of the influenza A virus M2 ion channel
+      protein was performed. The M2 protein of human influenza virus A/Udorn/72
+      and mutants containing changes on one face of the putative alpha helix of
+      the M2 transmembrane (TM) domain, several of which lead to amantadine
+      resistance when found in virus, were expressed in oocytes of Xenopus
+      laevis. The membrane currents of oocytes expressing mutant M2 ion channels
+      were measured at both normal and low pH, and the amantadine-resistant
+      mutant containing the change of alanine at residue 30 to threonine was
+      found to have a significantly attenuated low pH activation response. The
+      specific activity of the channel current of the amantadine-resistant
+      mutants was investigated by measuring the membrane current of individual
+      oocytes followed by quantification of the amount of M2 protein expressed
+      in these single oocytes by immunoblotting analysis. The data indicate that
+      changing residues on this face of the putative alpha helix of the M2 TM
+      domain alters properties of the M2 ion channel. Some of the M2 proteins
+      containing changes in the TM domain were found to be modified by addition
+      of an N-linked carbohydrate chain at an asparagine residue that is
+      membrane proximal and which is not modified in the wild-type M2 protein.
+      These N-linked carbohydrate chains were further modified by addition of
+      polylactosaminoglycan. A glycosylated M2 mutant protein (M2 + V, A30T)
+      exhibited an ion channel activity with a voltage-activated, time-dependent
+      kinetic component. Prevention of carbohydrate addition did not affect the
+      altered channel activity. The ability of the M2 protein to tolerate
+      deletions in the TM domain was examined by expressing three mutants
+      (del29-31, del28-31, and del27-31) containing deletions of three, four,
+      and five residues in the TM domain. No ion channel activity was detected
+      from expression of M2 del29-31 and del27-31, whereas expression of M2
+      del28-31 resulted in an ion channel activity that was activated by
+      hyperpolarization (and not low pH) and was resistant to amantadine block.
+      Examination of the oligomeric form of M2 del28-31 indicated that the
+      oligomer is different from wild-type M2, and the data were consistent with
+      M2 del28-31 forming a pentamer.
+AD  - Department of Biochemistry, Molecular Biology and Cell Biology,
+      Northwestern University, Evanston, Illinois 60208-3500.
+FAU - Holsinger, L J
+AU  - Holsinger LJ
+FAU - Nichani, D
+AU  - Nichani D
+FAU - Pinto, L H
+AU  - Pinto LH
+FAU - Lamb, R A
+AU  - Lamb RA
+LA  - eng
+GR  - AI-20201/AI/NIAID
+GR  - AI-31882/AI/NIAID
+PT  - Journal Article
+PL  - UNITED STATES
+TA  - J Virol
+JID - 0113724
+RN  - 0 (Ion Channels)
+RN  - 0 (M-protein, influenza virus)
+RN  - 0 (M2 protein, Influenza A virus)
+RN  - 0 (Viral Matrix Proteins)
+RN  - 11089-65-9 (Tunicamycin)
+RN  - 768-94-5 (Amantadine)
+RN  - EC 3.2.1. (Glycoside Hydrolases)
+RN  - EC 3.2.1.103 (keratan-sulfate endo-1,4-beta-galactosidase)
+RN  - EC 3.2.1.23 (beta-Galactosidase)
+SB  - IM
+MH  - Amantadine/pharmacology
+MH  - Amino Acid Sequence
+MH  - Animals
+MH  - DNA Mutational Analysis
+MH  - Electric Conductivity
+MH  - *Glycoside Hydrolases
+MH  - Glycosylation
+MH  - Hydrogen-Ion Concentration
+MH  - Influenza A virus/*chemistry/genetics
+MH  - Ion Channels/drug effects/genetics/*metabolism
+MH  - Molecular Sequence Data
+MH  - Oocytes
+MH  - Protein Conformation
+MH  - Protein Structure, Secondary
+MH  - Research Support, Non-U.S. Gov't
+MH  - Research Support, U.S. Gov't, P.H.S.
+MH  - Sequence Deletion
+MH  - Structure-Activity Relationship
+MH  - Tunicamycin/pharmacology
+MH  - Viral Matrix Proteins/drug effects/genetics/*metabolism
+MH  - Xenopus laevis
+MH  - beta-Galactosidase/pharmacology
+EDAT- 1994/03/01
+MHDA- 1994/03/01 00:01
+PST - ppublish
+SO  - J Virol 1994 Mar;68(3):1551-63. 
+
+
+

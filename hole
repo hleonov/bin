@@ -1,0 +1,40 @@
+#! /usr/bin/perl
+
+$file = $ARGV[0];
+unless($ARGV[1]){
+  $dotden = 5
+}
+else{
+  $dotden = $ARGV[1];
+}
+
+# removing the .inp if it is there
+
+#$file =~ s/\.inp//g;
+$file_inp = $file;
+$file_log = $file.".log";
+$file_sph = "structure2hole.sph";
+$file_sos = $file.".sos";
+$file_vmd = $file.".vmd";
+$file_qpt = $file.".qpt";
+@files = ($file_log, $file_sph, $file_sos, $file_vmd, $file_qpt);
+foreach $i (@files){
+  if (-e $i){
+    unlink($i);
+  }
+}
+# adjust inp file
+`sed 's/\(\w*.pdb\)/$file/' m2.inp > $file_inp`;
+
+# run hole
+system("/Users/hleonov/Programs/hole2/exe/hole < $file_inp > $file_log");
+
+# Making xvg file - doesn't work, unless on shell
+#system("grep '^[\s]*[-]*[0-9]*\.[0-9]*[ ]*[-]*[0-9]*\.[0-9]*' $file_log | awk '{print \$1, \$2}' > radius.xvg");
+
+# making the sos
+system("/Users/hleonov/Programs/hole2/exe/sph_process -sos -dotden $dotden -color 2.3 4 $file_sph $file_sos");
+# making the vmd
+#system("/home/hadasleo/Programs/hole2/exe/sos_triangle -v < $file_sos > $file_vmd");
+
+

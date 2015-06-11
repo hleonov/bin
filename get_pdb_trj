@@ -1,0 +1,12 @@
+#!/bin/csh -f
+
+foreach dir (`cat list`) 
+	cd $dir
+	foreach name (`ls -1 *MD*.xtc fixed*.xtc final*.xtc`) 
+		printf "1" | trjconv -f $name -o $name.trj.pdb -dt 20 -s system_for_MD.tpr
+	end
+	cd ..
+end
+
+
+

@@ -1,0 +1,26 @@
+set title "trj_S-WT_375"
+set xlabel "Frame"
+set xrange [ 0 : 375 ] noreverse nowriteback
+set ylabel "Z value along pore"
+set yrange [ 10 : 55 ] noreverse nowriteback
+set zlabel "Pore Radius"
+set zrange [ 0.00000 : 8 ] noreverse nowriteback
+set ztics border nomirror norotate 0.00000, 1, 8
+set xtics border nomirror norotate 0.00000,50,375
+set ytics border nomirror norotate 10,5,55
+set cbrange [0.00000 : 12]
+set dgrid3d 50,37,16
+set dummy u,v
+#set key right top Right noreverse enhanced box linetype -1 linewidth  1.000 samplen 4 spacing 1 width 0 height 0 autotitles
+set palette defined (0 "dark-red", 1.4 "red", 1.4 "green",          3 "sea-green", 6 "blue", 12 "midnight-blue")
+set parametric
+set hidden3d
+set pm3d
+set surface
+set view 0,0
+r=1.4
+normal(area)=area/(pi*r*r)
+set style data lines
+splot 'hole_gnu.dat' using 1:3:($2) title "Pore Radius"
+set terminal postscript color
+set output "hole_plot.ps"
