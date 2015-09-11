@@ -69,6 +69,7 @@ for song in files:
    try:
       f = MP3(old_name)
       bitrate = f.info.bitrate / 1000
+	  bitrate = 196
    except:
       print "Critical Error: Problem with file %s" % old_name
       exit() 
